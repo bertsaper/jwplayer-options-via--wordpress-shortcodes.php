@@ -1,71 +1,59 @@
 <?php
 /**
  * @package JWPlayer_Options_Via_Shortcodes
- * @version 1.6
+ * @version 1.0
  */
 /*
 Plugin Name: JWPlayer Options Via Shortcodes
-Plugin URI: http://github/
+Plugin URI: https://github.com/bertsaper/jwplayer-options-via-wordpress-shortcodes
 Description: Adds shortcode capability for creating code for Licensed JWPlayers via WordPress Shortcodes. After acticvation, see settings link "JWPlayer Options Settings" for instructions.
-Author: Bert
+Author: Bert Saper
 Version: 1.0
-Author URI: http://ma.tt/
+Author URI: http://saper.us
 */
-
 /**
 * Install Uninstall Delete Hooks
 * Uses instructions from
 * https://www.smashingmagazine.com/2011/09/how-to-create-a-wordpress-plugin/
 */
-
 register_activation_hook(   __FILE__, array( 'JWPlayerOptionsSettingsPage', 'on_activation' ) );
 register_deactivation_hook( __FILE__, array( 'JWPlayerOptionsSettingsPage', 'on_deactivation' ) );
 register_uninstall_hook(    __FILE__, array( 'JWPlayerOptionsSettingsPage', 'on_uninstall' ) );
-
 add_action( 'plugins_loaded', array( 'JWPlayerOptionsSettingsPage', 'init' ) );
-
 class JWPlayerOptionsSettingsPage
 {
     
     protected static $instance;
-
     public static function init()
     {
         is_null( self::$instance ) AND self::$instance = new self;
         return self::$instance;
     }
-
     public static function on_activation()
     {
         if ( ! current_user_can( 'activate_plugins' ) )
             return;
         $plugin = isset( $_REQUEST['plugin'] ) ? $_REQUEST['plugin'] : '';
         check_admin_referer( "activate-plugin_{$plugin}" );
-
     }
-
     public static function on_deactivation()
     {
         if ( ! current_user_can( 'activate_plugins' ) )
             return;
         $plugin = isset( $_REQUEST['plugin'] ) ? $_REQUEST['plugin'] : '';
         check_admin_referer( "deactivate-plugin_{$plugin}" );
-
     }
-
     public static function on_uninstall()
     {
         if ( ! current_user_can( 'activate_plugins' ) )
             return;
         check_admin_referer( 'bulk-plugins' );
-
         // Important: Check if the file is the one
         // that was registered during the uninstall hook.
         if ( __FILE__ != WP_UNINSTALL_PLUGIN )
             global $wpdb;
             $wpdb->query('DELETE  FROM  ' . $wpdb->prefix . 'options WHERE option_name = "jwplayer_options_option_name"');       
             return;
-
     }
     
     
@@ -78,7 +66,6 @@ class JWPlayerOptionsSettingsPage
      * Holds the values to be used in the fields callbacks
      */
     private $options;
-
     /**
      * Start up
      */
@@ -87,7 +74,6 @@ class JWPlayerOptionsSettingsPage
         add_action( 'admin_menu', array( $this, 'add_plugin_page' ) );
         add_action( 'admin_init', array( $this, 'page_init' ) );
     }
-
     /**
      * Add options page
      */
@@ -102,7 +88,6 @@ class JWPlayerOptionsSettingsPage
             array( $this, 'create_admin_page' )
         );
     }
-
     /**
      * Options page callback
      */
@@ -117,17 +102,17 @@ class JWPlayerOptionsSettingsPage
   <h3>Please be sure to review the default entries beneath these instructions.</h3>
   <div style="max-width: 650px">
     <p>This Short Code:</p>
-    <blockquote><strong>[videoInfo id=&quot;http://www.without-warning.net/video/advice_for_yoad_1.mp4|http://www.without-warning.net/video/advice_for_yoad_1.jpg&quot;]</strong></blockquote>
+    <blockquote><strong>[videoInfo id=&quot;path_to_video.mp4|path_to_image.jpg&quot;]</strong></blockquote>
     <p>
     Will embed the JWPlayer, which defaults to HTML5 but will revert to Flash if needed. The video path and the image path are separated by a bar (|).
     </p>
     <p><strong>Please Note:</strong> If you want to embed more than one player per page, you will need to enter an alternative Div ID for by adding a bar and a name after the image address:</p>
-    <blockquote>[videoInfo id=&quot;http://www.without-warning.net/video/advice_for_yoad_1.mp4|http://www.without-warning.net/video/advice_for_yoad_1.jpg<strong>|AnotherDivName&quot;]</strong></blockquote>
+    <blockquote>[videoInfo id=&quot;path_to_video.mp4|path_to_image.jpg<strong>|AnotherDivName&quot;]</strong></blockquote>
     <p>You can choose any name other than &quot;video-player1&quot;", which is the default. A third player would need a name different from the other two, etc.</p>
     <p>You can also over-right the default width entered below. To do so, you will also need to enter a Div ID name. This changes the width from the default to 40%:</p>
-    <blockquote>[videoInfo id=&quot;http://www.without-warning.net/video/advice_for_yoad_1.mp4|http://www.without-warning.net/video/advice_for_yoad_1.jpg|DivName<strong>|40%&quot;]</strong></blockquote>
+    <blockquote>[videoInfo id=&quot;path_to_video.mp4|path_to_image.jpg|DivName<strong>|40%&quot;]</strong></blockquote>
     <p>Similarly, changing the aspect ratio of the player requires the entry of a Div ID name and a width. This will change the aspect ratio to 4:3:</p>
-    <blockquote>[videoInfo id=&quot;http://www.without-warning.net/video/advice_for_yoad_1.mp4|http://www.without-warning.net/video/advice_for_yoad_1.jpg|DivName|100%<strong>|4:3&quot;] </strong></blockquote>
+    <blockquote>[videoInfo id=&quot;path_to_video.mp4|path_to_image.jpg|DivName|100%<strong>|4:3&quot;] </strong></blockquote>
   </div>
   <form method="post" action="options.php">
     <?php
@@ -140,7 +125,6 @@ class JWPlayerOptionsSettingsPage
 </div>
 <?php
     }
-
     /**
      * Register and add settings
      */
@@ -151,14 +135,12 @@ class JWPlayerOptionsSettingsPage
             'jwplayer_options_option_name', // Option name
             array( $this, 'sanitize' ) // Sanitize
         );
-
         add_settings_section(
             'setting_section_id', // ID
             'Default Player Settings (Width and Aspect Ration can be overidden via shortcode. See instructions above.)', // Title
             array( $this, 'print_section_info' ), // Callback
             'jwplayer-options-setting-admin' // Page
         );  
-
         add_settings_field(
             'video_width', // ID
             'Default Video Width (Generaly 100%). Can be overwritten via shortcode&mdash; see above.', // Title 
@@ -166,7 +148,6 @@ class JWPlayerOptionsSettingsPage
             'jwplayer-options-setting-admin', // Page
             'setting_section_id' // Section           
         );      
-
         add_settings_field(
             'aspect_ratio', 
             'Default Aspect Ratio (Generally 16:9). Can be overwritten via shortcode&mdash; see above.', 
@@ -200,7 +181,6 @@ class JWPlayerOptionsSettingsPage
         );      
                    
     }
-
     /**
      * Sanitize each setting field as needed
      *
@@ -211,7 +191,6 @@ class JWPlayerOptionsSettingsPage
         $new_input = array();
         if( isset( $input['video_width'] ) )
             $new_input['video_width'] = sanitize_text_field( $input['video_width'] );
-
         if( isset( $input['aspect_ratio'] ) )
             $new_input['aspect_ratio'] = sanitize_text_field( $input['aspect_ratio'] );
             
@@ -228,7 +207,6 @@ class JWPlayerOptionsSettingsPage
     }
     
     
-
     /** 
      * Print instructions and the Section text
      */
@@ -238,7 +216,6 @@ class JWPlayerOptionsSettingsPage
     print 'Enter your settings below:'; 
     
     }
-
     /** 
      * Get the settings option array and print one of its values
      */
@@ -249,7 +226,6 @@ class JWPlayerOptionsSettingsPage
             isset( $this->options['video_width'] ) ? esc_attr( $this->options['video_width']) : ''
         );
     }
-
     /** 
      * Get the settings option array and print one of its values
      */
@@ -260,7 +236,6 @@ class JWPlayerOptionsSettingsPage
             isset( $this->options['aspect_ratio'] ) ? esc_attr( $this->options['aspect_ratio']) : ''
         );
     }
-
     public function player_path_callback()
     {
         
@@ -289,13 +264,11 @@ class JWPlayerOptionsSettingsPage
     }    
      
 }
-
-
    
 /**
 * Short Code for Video
 * This Short Code:
-* [videoInfo id="http://www.without-warning.net/video/advice_for_yoad_1.mp4|http://www.without-warning.net/video/advice_for_yoad_1.jpg"]
+* [videoInfo id="path_to_video.mp4|path_to_image.jpg"]
 * Will embed the jwplayer, which defaults to HTML5 but can run Flash if needed.
 * The video path and the image path are separated by a bar (|).
 */    
@@ -340,7 +313,6 @@ if (strlen($player_key_path) > 3) {
    $playerID = "video-player1";
     
     extract(shortcode_atts( array('id' => ''), $atts));
-
     $jwplayerOutput = explode("|", $id);
     
    /**
@@ -349,7 +321,6 @@ if (strlen($player_key_path) > 3) {
    
    if( isset( $jwplayerOutput[2] ) )            
     $playerID = $jwplayerOutput[2];    
-
    /**
    * if an entry overrides the default width
    */
@@ -385,10 +356,7 @@ if (strlen($player_key_path) > 3) {
     $output .= '// ]]></script>' . chr(10);     
     $output .= '</div>' . chr(10);    
     return $output;
-
 }
-
-
-
 add_shortcode('videoInfo', 'video_output');   
 
+?>
