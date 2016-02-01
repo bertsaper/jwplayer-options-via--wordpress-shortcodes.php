@@ -1,4 +1,4 @@
-# jwplayer-options-via--wordpress-shortcodes
+# jwplayer-options-via-wordpress-shortcodes
 WordPress Short Code for Licensed JW Players
 
 This Short Code:
