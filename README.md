@@ -1,7 +1,7 @@
 # jwplayer-options-via-wordpress-shortcodes
 WordPress Short Code for Licensed JW Players
 
-This Short Code:
+When this plugin is placed in wp-content/plugins and activated via the Plugins menu, this Short Code:
 
 [videoInfo id="path_to_video.mp4|path_to_image.jpg"]
 Will embed the JWPlayer, which defaults to HTML5 but will revert to Flash if needed. The video path and the image path are separated by a bar (|).
@@ -17,3 +17,5 @@ You can also over-right the default width entered below. To do so, you will also
 Similarly, changing the aspect ratio of the player requires the entry of a Div ID name and a width. This will change the aspect ratio to 4:3:
 
 [videoInfo id="path_to_video.mp4|path_to_image.jpg|DivName|100%|4:3"]
+
+These instructions and setup fields will display under Settings | JWPlayer Options Settings.
