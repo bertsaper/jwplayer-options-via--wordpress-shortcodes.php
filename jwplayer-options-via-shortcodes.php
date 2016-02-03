@@ -106,13 +106,17 @@ class JWPlayerOptionsSettingsPage
     <p>
     Will embed the JWPlayer, which defaults to HTML5 but will revert to Flash if needed. The video path and the image path are separated by a bar (|).
     </p>
-    <p><strong>Please Note:</strong> If you want to embed more than one player per page, you will need to enter an alternative Div ID for by adding a bar and a name after the image address:</p>
-    <blockquote>[videoInfo id=&quot;path_to_video.mp4|path_to_image.jpg<strong>|AnotherDivName&quot;]</strong></blockquote>
+    <p><strong>If you want to embed more than one player per page</strong>, you will need to enter an alternative div name for  adding a bar and a name after the image address:</p>
+    <blockquote>[videoInfo id=&quot;path_to_video.mp4|path_to_image.jpg|<strong>AnotherDivName</strong>&quot;]</blockquote>
     <p>You can choose any name other than &quot;video-player1&quot;", which is the default. A third player would need a name different from the other two, etc.</p>
-    <p>You can also over-right the default width entered below. To do so, you will also need to enter a Div ID name. This changes the width from the default to 40%:</p>
-    <blockquote>[videoInfo id=&quot;path_to_video.mp4|path_to_image.jpg|DivName<strong>|40%&quot;]</strong></blockquote>
-    <p>Similarly, changing the aspect ratio of the player requires the entry of a Div ID name and a width. This will change the aspect ratio to 4:3:</p>
-    <blockquote>[videoInfo id=&quot;path_to_video.mp4|path_to_image.jpg|DivName|100%<strong>|4:3&quot;] </strong></blockquote>
+    <p><strong>If you want to add a duration for your video</strong>, you will need to enter a div name and the duration in seconds:</p>
+    <blockquote>
+      <p>[videoInfo id=&quot;path_to_video.mp4|path_to_image.jpg<strong>|</strong>AnotherDivName<strong>|532&quot;]</strong></p>
+    </blockquote>
+    <p><strong>You can  overwrite the default width entered below.</strong> To do so, you will also need to enter a div name and a duration. This changes the width from the default to 40%:</p>
+    <blockquote>[videoInfo id=&quot;path_to_video.mp4|path_to_image.jpg|DivName|532<strong>|40%&quot;]</strong></blockquote>
+    <p><strong>You can  overwrite the default  aspect ratio  entered below.</strong> This requires the entry of a div name, a duration and a width. This will change the aspect ratio to 4:3:</p>
+    <blockquote>[videoInfo id=&quot;path_to_video.mp4|path_to_image.jpg|DivName|532|100%<strong>|4:3&quot;] </strong></blockquote>
   </div>
   <form method="post" action="options.php">
     <?php
@@ -316,24 +320,31 @@ if (strlen($player_key_path) > 3) {
     $jwplayerOutput = explode("|", $id);
     
    /**
-   * if an entry overrides the default video player id
+   * if an entry overrides the default video player div id
    */
-   
    if( isset( $jwplayerOutput[2] ) )            
-    $playerID = $jwplayerOutput[2];    
+    $playerID = $jwplayerOutput[2];
+
    /**
-   * if an entry overrides the default width
+   * if a user desires to add a duration-- a video player div id
+   * must be entered for this to work
    */
-   
    if( isset( $jwplayerOutput[3] ) )            
-    $video_width = $jwplayerOutput[3];
+    $video_duration = $jwplayerOutput[3];
+
+   /**
+   * if an entry overrides the default width-- a video player div id
+   * and duration must be entered for this to work
+   */
+   if( isset( $jwplayerOutput[4] ) )            
+    $video_width = $jwplayerOutput[4];
     
    /**
-   * if an entry overrides the default aspect ratio
+   * if an entry overrides the default aspect ratio-- a video player div id,
+   * duration and a width must be entered for this to work
    */
-   
-   if( isset( $jwplayerOutput[4] ) )            
-    $aspect_ratio = $jwplayerOutput[4];    
+   if( isset( $jwplayerOutput[5] ) )            
+    $aspect_ratio = $jwplayerOutput[5];    
              
     $output  = '<div id="' . $playerID . '">' . chr(10);
     $output .=  chr(9);     
@@ -348,7 +359,11 @@ if (strlen($player_key_path) > 3) {
     $output .= 'width: "' . $video_width . '",' . chr(10);
     $output .=  chr(9) . chr(9);          
     $output .= 'aspectratio: "' . $aspect_ratio . '",' . chr(10);
-    $output .=  chr(9) . chr(9);    
+    $output .=  chr(9) . chr(9);
+    if( isset( $jwplayerOutput[3] ) ) {
+    $output .= 'duration: ' . $video_duration . ',' . chr(10);
+    $output .=  chr(9) . chr(9);
+    };
     $output .= 'wmode: "transaparent"' . chr(10);
     $output .=  chr(9) . chr(9);           
     $output .= '});' . chr(10);
